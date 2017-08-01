@@ -236,7 +236,10 @@ class MeasureValue():
 
   def getLastSaveTimeStamp(self, valueName):
     value=self.getLastSaveData(valueName, "timeStamp")
-    return int(value)
+    if value is None:
+      return 0
+    else:      
+      return int(value)
 
 
   def getPreviousSaveValue(self, valueName):
@@ -246,6 +249,9 @@ class MeasureValue():
 
   def getPreviousSaveTimeStamp(self, valueName):
     value=self.getPreviousSaveData(valueName, "timeStamp")
-    return int(value)
+    if value is None:
+      return 0
+    else:
+      return int(value)
 
     

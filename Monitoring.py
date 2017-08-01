@@ -21,7 +21,7 @@ def test(measureValue): pass # "Прототип" функции test - для �
 #----------------
 
 # Версия скрипта
-version='0.35'
+version='0.36'
 
 # Время старта скрипта
 startTime=datetime.datetime.now().strftime( '%Y-%m-%d-%H-%M-%S' )
@@ -79,41 +79,54 @@ def monitoringCycle(measureValue, valueAnalytic):
 
     # Отправка отчета по почте
     if config.sendMailFlag:
-      mailSender=MailSender()
-      mailSender.setReportMail(config.reportMail)
-      mailSender.setMailFrom(config.mailFrom)
-      mailSender.setMailServer(config.mailServer)
-      mailSender.setMailPort(config.mailPort)
-      mailSender.setMailUser(config.mailUser)
-      mailSender.setMailPassword(config.mailPassword)
-      mailSender.send('Monitoring report', startTime+"\n"+rulesResult+"\n"+log.getAll()) # По почте сообщение отправляется всегда
+      monitoringSendMail( rulesResult ) 
     
     # Отправка уведомлений по SMS
     if config.sendSmsFlag:
-
-      # Количество секунд с начала дня
-      currentTime = datetime.datetime.now()
-      currentHour = currentTime.hour # Час текущий
-      currentMinute = currentTime.minute # Минута текущая
-      currentSecond = currentTime.second # Секунда текущие
-      currentSecondInDay=currentSecond + currentMinute*60 + currentHour*60*60
-
-      # Если не время молчания
-      if currentSecondInDay>=config.muteSmsStartInDay and currentSecondInDay<=config.muteSmsStopInDay:
-        smsSender=SmsSender()
-        smsSender.setReportPhoneNumber(config.reportPhoneNumber)
-        smsSender.setMobileTty(config.mobileTty)
-        smsSender.send("Monitoring:\n"+rulesResult) # По SMS сообщение отправляется только не во время молчания
+      monitoringSendSMS( rulesResult ) 
 
     # Обнаруженные ошибки пробрасываются в лог
-    log.echo(rulesResult)
+    log.echo( rulesResult )
 
-  log.echo('Мониторинг завершен.');
+  log.echo( 'Мониторинг завершен.' );
 
   return
 
 
-# Отладка. Тестирование основной функциональности
+def monitoringSendMail( rulesResult ):  
+
+  mailSender=MailSender()
+  mailSender.setReportMail(config.reportMail)
+  mailSender.setMailFrom(config.mailFrom)
+  mailSender.setMailServer(config.mailServer)
+  mailSender.setMailPort(config.mailPort)
+  mailSender.setMailUser(config.mailUser)
+  mailSender.setMailPassword(config.mailPassword)
+  mailSender.send('Monitoring report', startTime+"\n"+rulesResult+"\n"+log.getAll())
+
+  return
+
+  
+def monitoringSendSMS( rulesResult ):  
+
+  # Количество секунд с начала дня
+  currentTime = datetime.datetime.now()
+  currentHour = currentTime.hour # Час текущий
+  currentMinute = currentTime.minute # Минута текущая
+  currentSecond = currentTime.second # Секунда текущие
+  currentSecondInDay=currentSecond + currentMinute*60 + currentHour*60*60
+
+  # Если не время молчания
+  if currentSecondInDay>=config.muteSmsStartInDay and currentSecondInDay<=config.muteSmsStopInDay:
+    smsSender=SmsSender()
+    smsSender.setReportPhoneNumber(config.reportPhoneNumber)
+    smsSender.setMobileTty(config.mobileTty)
+    smsSender.send("Monitoring:\n"+rulesResult) # По SMS сообщение отправляется только не во время молчания
+
+  return
+
+
+# Отладка. Проверка основной функциональности
 def test(measureValue):
 
   # Получение текущих значений

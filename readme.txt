@@ -11,14 +11,16 @@ How to use
 ----------
 
 
-1. Create empty SQLite3 database:
+1. Create empty SQLite3 database. Run command:
 
 sqlite3 database.db
 
 
-2. Run create tables commands in SQLite3 console:
+2. ... and in SQLite3 console run create tables commands:
 
 .read dbcreate.sql
+
+For exit from SQLite console, use command ".q"
 
 
 3. Set parameters in Config.py

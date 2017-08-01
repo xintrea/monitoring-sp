@@ -6,6 +6,9 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 
 from Log import *
+from MeasureValue import *
+from ValueAnalytic import *
+
 
 # ----------------------------
 # Конфигурирование мониторинга
@@ -52,10 +55,10 @@ class Config():
     self.muteSmsStopInDay=60*60*7
     
     # Настройки базы данных
-    self.dbFileName="/opt/monitoring/database.db"
+    self.dbFileName="./database.db"
     
     # Настройка лога
-    self.logFileName="/opt/monitoring/log.txt"
+    self.logFileName="./log.txt"
 
 
   def getMeasureValue(self):

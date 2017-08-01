@@ -1,8 +1,10 @@
 Dependency
 ----------
 
-Python
-SCMXX - for send SMS message by COM-port
+1. Python
+2. SQLite3
+3. scmxx - SCMXX package for send SMS message by COM-port
+4. snmp - SNMP client
 
 
 How to use
@@ -19,7 +21,7 @@ sqlite3 database.db
 .read dbcreate.sql
 
 
-3. Set parameters in Monitoring.py
+3. Set parameters in Config.py
 
 
 4. Run Monitoring.py in python:
@@ -27,6 +29,6 @@ sqlite3 database.db
 /usr/bin/python ./Monitoring.py
 
 
-5. Write Monitoring.py periodic start in Cron config
+5. Insert Monitoring.py periodic start in Cron config
 
 

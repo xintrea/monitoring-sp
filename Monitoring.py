@@ -21,7 +21,7 @@ def test(measureValue): pass # "Прототип" функции test - для �
 #----------------
 
 # Версия скрипта
-version='0.34'
+version='0.35'
 
 # Время старта скрипта
 startTime=datetime.datetime.now().strftime( '%Y-%m-%d-%H-%M-%S' )
@@ -33,14 +33,14 @@ startTime=datetime.datetime.now().strftime( '%Y-%m-%d-%H-%M-%S' )
 
 def main():
 
-  log.setFileName(logFileName)
+  # Объект конфигурации и заполняется основными настройками
+  config.setMainProperties()
+
+  log.setFileName(config.logFileName)
   log.echo("\n\n")
   log.echo('Мониторинг v.'+version)
   log.echo('Время запуска: '+startTime)
   log.echo("\n")
-
-  # Объект конфигурации и заполняется основными настройками
-  config.setMainProperties()
 
   # Подготовка базы данных
   dataBaseWorker=DataBaseWorker()
@@ -93,16 +93,16 @@ def monitoringCycle(measureValue, valueAnalytic):
 
       # Количество секунд с начала дня
       currentTime = datetime.datetime.now()
-      currentHour = currentTime .hour # Час текущий
+      currentHour = currentTime.hour # Час текущий
       currentMinute = currentTime.minute # Минута текущая
       currentSecond = currentTime.second # Секунда текущие
       currentSecondInDay=currentSecond + currentMinute*60 + currentHour*60*60
 
       # Если не время молчания
-      if currentSecondInDay>=muteSmsStartInDay and currentSecondInDay<=muteSmsStopInDay:
+      if currentSecondInDay>=config.muteSmsStartInDay and currentSecondInDay<=config.muteSmsStopInDay:
         smsSender=SmsSender()
-        smsSender.setReportPhoneNumber(reportPhoneNumber)
-        smsSender.setMobileTty(mobileTty)
+        smsSender.setReportPhoneNumber(config.reportPhoneNumber)
+        smsSender.setMobileTty(config.mobileTty)
         smsSender.send("Monitoring:\n"+rulesResult) # По SMS сообщение отправляется только не во время молчания
 
     # Обнаруженные ошибки пробрасываются в лог
@@ -156,9 +156,6 @@ def test(measureValue):
   t2pt=measureValue.getPreviousSaveTimeStamp("APC1000_Temperature")
   log.echo("Previous save value APC1000_Temperature: "+str(t2pv))
   log.echo("Previous save timestamp APC1000_Temperature: "+str(t2pt))
-
-  # sendMail('Письмо из Питона', 'Это письмо из Питона.')
-  # raise SystemExit(1)
 
   return
 

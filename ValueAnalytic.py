@@ -115,8 +115,14 @@ class ValueAnalytic():
           resultData['currValue']=str(currentValue)
           
       if rule["ruleType"]=="gradient":
+        if currentValue is None:
+          currentValue=0
+        if previousValue is None:
+          previousValue=0
         deltaValue=int(currentValue)-int(previousValue)
+
         deltaTime=int(currentTime)-int(previousTime)
+
         if (deltaTime>=rule["deltaTime"] and deltaValue>=rule["deltaValue"]):
 
           # result="Sensor: "+rule["valueName"]+"\nReason: "+reason+"\nSituation: "+rule["ruleName"]+"\nEnable val.: "+str(rule["targetValue"])+"\nCurr.val: "+str(currentValue)

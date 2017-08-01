@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import serial
-from messaging.sms import SmsSubmit
 
 from Log import *
 from Helper import *

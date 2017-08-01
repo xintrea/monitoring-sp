@@ -1,2 +1,4 @@
 /misc/*
 *.pyc
+log.txt
+database.db

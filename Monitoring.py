@@ -16,15 +16,15 @@ from DataBaseWorker import *
 def test(measureValue): pass # "Прототип" функции test - для отладки
 
 
-#----------
-# Настройки
-#----------
+#----------------
+# Основные данные
+#----------------
 
 # Версия скрипта
 version='0.34'
 
 # Время старта скрипта
-startTime=datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+startTime=datetime.datetime.now().strftime( '%Y-%m-%d-%H-%M-%S' )
 
 
 #-------------
@@ -34,57 +34,62 @@ startTime=datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
 def main():
 
   log.setFileName(logFileName)
-
   log.echo("\n\n")
   log.echo('Мониторинг v.'+version)
   log.echo('Время запуска: '+startTime)
   log.echo("\n")
 
-  # Создается объект конфигурации и заполняется основными настройками
-  config=ValueAnalytic()
+  # Объект конфигурации и заполняется основными настройками
   config.setMainProperties()
 
   # Подготовка базы данных
   dataBaseWorker=DataBaseWorker()
-  dataBaseWorker.setDbFileName(config.dbFileName) # Установка имени файла БД
-  dataBaseWorker.deleteOlderData(config.dataOlderDeltaTime) # Удаление устаревших данных
+  dataBaseWorker.setDbFileName( config.dbFileName ) # Установка имени файла БД
+  dataBaseWorker.deleteOlderData( config.dataOlderDeltaTime ) # Удаление устаревших данных
 
-  # После подготовки базы данных можно подгружать настройки 
-  config.setMeasureValue()
-  config.setValueAnalytic()
+  # После подготовки базы данных можно подгружать настройки считываемых значений
+  measureValue=config.getMeasureValue()
+  valueAnalytic=config.getValueAnalytic()
 
+  monitoringCycle(measureValue, valueAnalytic)
+
+  return
+
+
+def monitoringCycle(measureValue, valueAnalytic):  
+  
   # Проверка работоспособности класса MeasureValue
   # test(measureValue)
   # return
 
   # Считывание текущих значений датчиков и их запись
   for valueName in measureValue.getValuesName():
-    v=str(measureValue.getCurrentValue(valueName))
+    v=str(measureValue.getCurrentValue( valueName ))
     log.echo("Значение датчика "+valueName+"="+v)
-    measureValue.saveValue(valueName, v)
+    measureValue.saveValue( valueName, v )
 
 
   # Проверка значений и получение отчета если сработали правила
-  rulesResult=valueAnalytic.checkAllRules(measureValue)
+  rulesResult=valueAnalytic.checkAllRules( measureValue )
 
-  if len(rulesResult)==0:
+  if len( rulesResult )==0:
     log.echo('Все оборудование работает нормально, либо недавно уже было оповещение о проблемах');
   else:
     log.echo("\nВНИМАНИЕ !\nОбнаружены ошибки в работе оборудования.");
 
     # Отправка отчета по почте
-    if sendMailFlag:
+    if config.sendMailFlag:
       mailSender=MailSender()
-      mailSender.setReportMail(reportMail)
-      mailSender.setMailFrom(mailFrom)
-      mailSender.setMailServer(mailServer)
-      mailSender.setMailPort(mailPort)
-      mailSender.setMailUser(mailUser)
-      mailSender.setMailPassword(mailPassword)
-      mailSender.send('RATE monitoring report', startTime+"\n"+rulesResult+"\n"+log.getAll()) # По почте сообщение отправляется всегда
+      mailSender.setReportMail(config.reportMail)
+      mailSender.setMailFrom(config.mailFrom)
+      mailSender.setMailServer(config.mailServer)
+      mailSender.setMailPort(config.mailPort)
+      mailSender.setMailUser(config.mailUser)
+      mailSender.setMailPassword(config.mailPassword)
+      mailSender.send('Monitoring report', startTime+"\n"+rulesResult+"\n"+log.getAll()) # По почте сообщение отправляется всегда
     
     # Отправка уведомлений по SMS
-    if sendSmsFlag:
+    if config.sendSmsFlag:
 
       # Количество секунд с начала дня
       currentTime = datetime.datetime.now()

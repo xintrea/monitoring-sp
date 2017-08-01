@@ -58,80 +58,83 @@ class Config():
     self.logFileName="/opt/monitoring/log.txt"
 
 
-  def setMeasureValue(self):
+  def getMeasureValue(self):
 
     log.echo('Конфигурация: применение настроек измеряемых значений')
 
     # Настройка объекта для работы с измеряемыми значениями
-    self.measureValue=MeasureValue()
-    self.measureValue.setDbFileName(self.dbFileName) # Установка имени файла БД, где хранятся измеренные значения
+    measureValue=MeasureValue()
+    measureValue.setDbFileName(self.dbFileName) # Установка имени файла БД, где хранятся измеренные значения
     
-    self.measureValue.addItem("APC5000_Temperature",            # Имя значения
-                              "int",                            # Тип значения 
-                              "snmpDeviceSensor",               # Механизм получения
-                              "10.153.0.88",                    # IP устройства, откуда вытягивается значение 
-                              ".1.3.6.1.4.1.318.1.1.1.2.2.2.0") # Для механизма snmpDeviceSensor указывается SNMP адрес
+    measureValue.addItem("APC5000_Temperature",            # Имя значения
+                         "int",                            # Тип значения 
+                         "snmpDeviceSensor",               # Механизм получения
+                         "10.153.0.88",                    # IP устройства, откуда вытягивается значение 
+                         ".1.3.6.1.4.1.318.1.1.1.2.2.2.0") # Для механизма snmpDeviceSensor указывается SNMP адрес
                        
-    self.measureValue.addItem("APC5000_InputVoltage",
-                              "int", 
-                              "snmpDeviceSensor",
-                              "10.153.0.88",
-                              ".1.3.6.1.4.1.318.1.1.1.3.2.1.0")
+    measureValue.addItem("APC5000_InputVoltage",
+                         "int", 
+                         "snmpDeviceSensor",
+                         "10.153.0.88",
+                         ".1.3.6.1.4.1.318.1.1.1.3.2.1.0")
                        
-    self.measureValue.addItem("domainConroller0_Ping",          # Имя значения
-                              "float",                          # Тип значения (задержка в секундах с дробной частью)
-                              "pingTest",                       # Механизм получения
-                              "10.153.0.11")                    # IP устройства, откуда вытягивается значение 
+    measureValue.addItem("domainConroller0_Ping",          # Имя значения
+                         "float",                          # Тип значения (задержка в секундах с дробной частью)
+                         "pingTest",                       # Механизм получения
+                         "10.153.0.11")                    # IP устройства, откуда вытягивается значение 
     
-    self.measureValue.addItem("gateWay0_IcmpCountFrom5",        # Имя значения
-                              "int",                            # Тип значения
-                              "icmpCountFrom5",                 # Механизм получения
-                              "10.153.0.1")                     # IP устройства, откуда вытягивается значение 
+    measureValue.addItem("gateWay0_IcmpCountFrom5",        # Имя значения
+                         "int",                            # Тип значения
+                         "icmpCountFrom5",                 # Механизм получения
+                         "10.153.0.1")                     # IP устройства, откуда вытягивается значение 
+    return measureValue                     
 
 
-  def setValueAnalytic(self):
+  def getValueAnalytic(self):
 
     log.echo('Конфигурация: применение настроек анализатора значений')
 
-    self.valueAnalytic=ValueAnalytic()
-    self.valueAnalytic.setDbFileName(self.dbFileName) # Установка БД, где хранятся срабатывания правил
-    self.valueAnalytic.setSituationReportPause(self.situationReportPause)
+    valueAnalytic=ValueAnalytic()
+    valueAnalytic.setDbFileName(self.dbFileName) # Установка БД, где хранятся срабатывания правил
+    valueAnalytic.setSituationReportPause(self.situationReportPause)
 
     # Правила срабатывания оповещений
-    self.valueAnalytic.addRule({"ruleName":"Датчик температуры ИБП APC5000 слишком горячий",
-                                "ruleType":"aboveOrEqual",             
-                                "valueName":"APC5000_Temperature",      
-                                "targetValue":32})
+    valueAnalytic.addRule({"ruleName":"Датчик температуры ИБП APC5000 слишком горячий",
+                           "ruleType":"aboveOrEqual",             
+                           "valueName":"APC5000_Temperature",      
+                           "targetValue":32})
     
-    self.valueAnalytic.addRule({"ruleName":"Датчик температуры ИБП APC5000 отключился",
-                                "ruleType":"equal",             
-                                "valueName":"APC5000_Temperature",      
-                                "targetValue":0})
+    valueAnalytic.addRule({"ruleName":"Датчик температуры ИБП APC5000 отключился",
+                           "ruleType":"equal",             
+                           "valueName":"APC5000_Temperature",      
+                           "targetValue":0})
     
-    self.valueAnalytic.addRule({"ruleName":"Слишком быстрое повышение температуры на ИБП APC5000",
-                                "ruleType":"gradient",             
-                                "valueName":"APC5000_Temperature",      
-                                "deltaTime":58,
-                                "deltaValue":2})
+    valueAnalytic.addRule({"ruleName":"Слишком быстрое повышение температуры на ИБП APC5000",
+                           "ruleType":"gradient",             
+                           "valueName":"APC5000_Temperature",      
+                           "deltaTime":58,
+                           "deltaValue":2})
     
-    self.valueAnalytic.addRule({"ruleName":"На ИБП APC5000 нет входного напряжения питания",
-                                "ruleType":"equal",             
-                                "valueName":"APC5000_InputVoltage",      
-                                "targetValue":0})
+    valueAnalytic.addRule({"ruleName":"На ИБП APC5000 нет входного напряжения питания",
+                           "ruleType":"equal",             
+                           "valueName":"APC5000_InputVoltage",      
+                           "targetValue":0})
     
-    self.valueAnalytic.addRule({"ruleName":"Долгий ответ сервера домена dc0 на пинги",
-                                "ruleType":"aboveOrEqual",             
-                                "valueName":"domainConroller0_Ping",      
-                                "targetValue":500.0})
+    valueAnalytic.addRule({"ruleName":"Долгий ответ сервера домена dc0 на пинги",
+                           "ruleType":"aboveOrEqual",             
+                           "valueName":"domainConroller0_Ping",      
+                           "targetValue":500.0})
     
-    self.valueAnalytic.addRule({"ruleName":"Сервер домена dc0 не отвечает на пинги",
-                                "ruleType":"equal",             
-                                "valueName":"domainConroller0_Ping",      
-                                "targetValue":None})
+    valueAnalytic.addRule({"ruleName":"Сервер домена dc0 не отвечает на пинги",
+                           "ruleType":"equal",             
+                           "valueName":"domainConroller0_Ping",      
+                           "targetValue":None})
     
-    self.valueAnalytic.addRule({"ruleName":"Пропадают не менее 4 из 5 ICMP пакетов от шлюза igw0 (серверная)",
-                                "ruleType":"lessOrEqual",
-                                "valueName":"gateWay0_IcmpCountFrom5",
-                                "targetValue":(5-1)}) 
+    valueAnalytic.addRule({"ruleName":"Пропадают не менее 4 из 5 ICMP пакетов от шлюза igw0 (серверная)",
+                           "ruleType":"lessOrEqual",
+                           "valueName":"gateWay0_IcmpCountFrom5",
+                           "targetValue":(5-1)}) 
+
+    return valueAnalytic
 
 config=Config()
